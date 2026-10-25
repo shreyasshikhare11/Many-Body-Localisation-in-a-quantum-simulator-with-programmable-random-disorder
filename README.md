@@ -1,117 +1,125 @@
-# Many-Body-Localisation-in-a-quantum-simulator-with-programmable-random-disorder
+# Many-Body Localization in a Quantum Simulator with Programmable Random Disorder
 
-This repository contains tools, simulators, and analysis code for studying many-body localisation (MBL) using trapped-ion / programmable quantum simulator models with random disorder. The codebase includes exact diagonalization engines, Trotterized circuit builders, hardware noise models, and analysis utilities for entanglement and measurement-based observables.
+This repository contains a single research notebook that studies many-body localization (MBL) in disordered spin chains using both classical exact diagonalization and digital quantum simulation.
 
-Repository layout
+The notebook models two complementary setups:
 
-```
-mbl_trapped_ion_sim/
-│
-├── README.md
-├── requirements.txt
-├── pyproject.toml
-│
-├── src/
-│   └── mbl_sim/
-│       ├── __init__.py
-│       ├── config.py          # Disorder topologies & initial state generators
-│       ├── exact_diag.py      # XXZ & long-range exact diagonalization engines
-│       ├── circuits.py        # Parameterized Suzuki-Trotter circuit builders
-│       ├── hardware.py        # Qiskit Aer noise models & hardware execution engine
-│       └── observables.py     # Entanglement entropy, skin depth & randomized measurements
-│
-├── tests/
-│   ├── __init__.py
-│   ├── test_exact_diag.py    # Verification of Hamiltonians & spectral statistics
-│   ├── test_circuits.py      # Gate count, depth, and Trotter unitaries tests
-│   └── test_observables.py   # Statevector vs. randomized measurement parity tests
-│
-└── main.py                    # Integrated MBL instability sweep & execution script
-```
+- A 1D disordered XXZ chain with exact diagonalization and Trotterized quantum-circuit dynamics.
+- A trapped-ion long-range spin model used to study localization signatures such as imbalance and level-spacing statistics.
 
-Quick overview
+The project is intended as a reproducible exploration of the transition between ergodic and localized regimes, with plots of entanglement entropy, imbalance, and spectral diagnostics.
 
-- Language: Python
-- Purpose: Provide simulation and analysis workflows to explore MBL phenomena in small-to-intermediate-sized quantum simulators and to compare circuit-based dynamics with exact diagonalization where feasible.
+## Repository contents
 
-Highlights
+- `Many_body_localization_in_a_quantum_simulator_with_programmable_random_disorder.ipynb` — main notebook with all simulations, plots, and model implementations.
+- `README.md` — project overview and usage instructions.
 
-- Exact diagonalization (XXZ & long-range Hamiltonians) for spectral statistics and eigenstate properties.
-- Parameterized Trotter circuit generation for trotterized time evolution experiments.
-- Noise & hardware modeling using Qiskit Aer backends (optional) to assess experimental robustness.
-- Observables including entanglement entropy, localization measures (e.g., inverse participation ratio / skin depth), and methods for randomized measurements.
+## What is inside the notebook?
 
-Requirements
+The notebook is organized into several phases and simulation pipelines:
 
-- Python 3.8+
-- NumPy, SciPy, Numba (optional), Matplotlib
-- Qiskit (optional, for hardware simulations and noise models)
+### 1. Disordered XXZ chain
 
-Install
+- Exact diagonalization of a 1D XXZ Hamiltonian with random onsite fields.
+- Construction of the domain-wall / Néel initial state.
+- Time evolution via matrix exponentiation.
+- Trotterized quantum-circuit implementation using Qiskit.
+- Disorder-averaged entanglement entropy `S_A(t)` as a signature of ergodic vs localized behavior.
 
-1. Clone the repository
+### 2. Trapped-ion long-range model
 
-   git clone https://github.com/shreyasshikhare11/Many-Body-Localisation-in-a-quantum-simulator-with-programmable-random-disorder.git
-   cd Many-Body-Localisation-in-a-quantum-simulator-with-programmable-random-disorder
+- Long-range XX interactions with power-law decay.
+- Onsite random disorder and transverse fields.
+- Exact diagonalization of the trapped-ion Hamiltonian.
+- Evolution of the Néel state under unitary time dynamics.
+- Computation of imbalance `I(t)` and level-spacing ratio `r`.
 
-2. Create and activate a virtual environment
+### 3. Hardware/noisy simulation components
 
-   python -m venv .venv
-   source .venv/bin/activate    # macOS / Linux
-   .\.venv\Scripts\activate   # Windows (PowerShell)
+- Disorder generation for random and quasiperiodic fields.
+- Initial state configuration helpers.
+- Noisy Qiskit execution framework for finite-shot simulation on trapped-ion-like hardware.
 
-3. Install dependencies
+## Scientific motivation
 
-   pip install -r requirements.txt
+The notebook is inspired by the study of many-body localization in systems with programmable disorder and by trapped-ion experimental platforms. It compares:
 
-If you don't have a requirements.txt yet, a minimal set is:
+- thermalizing/ergodic dynamics at weak disorder,
+- localized dynamics at strong disorder,
+- exact-diagonalization benchmarks against Trotterized circuit evolution.
 
-```
-numpy
-scipy
-matplotlib
-qiskit-aer    # optional
-numba          # optional, for performance
-pytest
+## Requirements
+
+Python 3.10+ is recommended.
+
+Install dependencies with:
+
+```bash
+python -m pip install numpy scipy matplotlib qiskit qiskit-aer jupyter
 ```
 
-Usage
+Optional packages used in some parts of the notebook include:
 
-- Run the integrated sweep:
+- `qiskit-aer` for noisy simulation support.
+- `matplotlib` for plotting.
 
-  python main.py --config configs/example.yaml
+## Running the notebook
 
-- Use the package API from Python:
+### Option 1: Local Jupyter
 
-```python
-from mbl_sim import config, exact_diag, circuits, observables
-
-H = exact_diag.build_xxz_hamiltonian(num_spins=8, J=1.0, delta=1.0, long_range_alpha=1.5)
-energies, states = exact_diag.diagonalize(H)
-S = observables.entanglement_entropy(states[0], subsystem_size=4)
+```bash
+git clone https://github.com/shreyasshikhare11/Many-Body-Localisation-in-a-quantum-simulator-with-programmable-random-disorder.git
+cd Many-Body-Localisation-in-a-quantum-simulator-with-programmable-random-disorder
+jupyter notebook
 ```
 
-- Run tests:
+Then open:
 
-  pytest -q
+- `Many_body_localization_in_a_quantum_simulator_with_programmable_random_disorder.ipynb`
 
-Development notes
+### Option 2: Google Colab
 
-- Tests in tests/ verify Hamiltonian construction, Trotter unitary assembly, and randomized measurement estimators. Run them often when changing numeric routines.
-- Follow the docstrings in src/mbl_sim/ for function-level usage. Consider adding notebook examples in notebooks/ to demonstrate common workflows and figures.
+Upload the notebook to Google Colab and run all cells in order. The notebook already includes installation commands for `qiskit` and `qiskit-aer`.
 
-Contributing
+## Typical workflow
 
-Contributions are welcome. Please open issues for bug reports and feature requests, and send pull requests for changes. Include tests for any numerical or algorithmic changes.
+The notebook generally follows this sequence:
 
-License
+1. Install Qiskit and Qiskit Aer.
+2. Define Hamiltonians and state-preparation routines.
+3. Run exact diagonalization for benchmarking.
+4. Build Trotterized circuit models.
+5. Compute entanglement entropy or imbalance.
+6. Average over disorder realizations.
+7. Plot the resulting curves and compare localized vs ergodic regimes.
 
-Please add a LICENSE file to define the project license (MIT, Apache-2.0, etc.). If you want, I can add an MIT license now.
+## Example outputs
 
-Authors
+The script sections in the notebook produce plots comparing:
 
-- shreyasshikhare11 (owner)
+- ergodic disorder strength vs MBL disorder strength,
+- entanglement growth in XXZ chains,
+- imbalance decay in trapped-ion models,
+- spectral statistics through the mean level-spacing ratio `r`.
 
-Contact
+## Notes
 
-Open an issue or reach out via GitHub.
+- This is a demonstration/research notebook rather than a packaged Python library.
+- The code is educational and exploratory, intended for numerical experiments and analysis.
+- Some sections are designed to show how disorder and dynamics can be modeled with Qiskit circuits and exact matrix methods.
+
+## License
+
+No explicit license file is present in this repository yet. Please add one if you plan to distribute or publish the project more broadly.
+
+## Author
+
+- shreyasshikhare11
+
+## References
+
+The notebook cites the underlying MBL and trapped-ion literature, including the paper:
+
+- "Many-body localization in a quantum simulator with programmable random disorder" (arXiv:1508.07026)
+
+If you want, I can also rewrite the notebook title/intro cells or turn this repository into a cleaner project structure with a `requirements.txt` and a proper `src/` layout.
